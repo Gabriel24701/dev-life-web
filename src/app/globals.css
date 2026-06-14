@@ -1,0 +1,76 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── CSS Custom Properties ─────────────────────────────────────────────── */
+@layer base {
+  :root {
+    --primary: 99 102 241;          /* indigo-500  */
+    --primary-light: 129 140 248;   /* indigo-400  */
+    --primary-dark: 67 56 202;      /* indigo-700  */
+    --sidebar-bg: 249 250 251;      /* gray-50     */
+    --sidebar-border: 229 231 235;  /* gray-200    */
+  }
+
+  .dark {
+    --sidebar-bg: 15 15 20;         /* near-black  */
+    --sidebar-border: 39 39 42;     /* zinc-800    */
+  }
+}
+
+/* ─── Scrollbar ─────────────────────────────────────────────────────────── */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(99 102 241 / 0.3) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgb(99 102 241 / 0.3);
+  border-radius: 999px;
+}
+
+/* ─── Focus Visible ─────────────────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid rgb(99 102 241);
+  outline-offset: 2px;
+}
+
+/* ─── Transition Utilities ──────────────────────────────────────────────── */
+@layer utilities {
+  .animate-in {
+    animation: animateIn 0.25s ease both;
+  }
+
+  .slide-in-from-right-5 {
+    --tw-enter-translate-x: 1.25rem;
+  }
+
+  .fade-in {
+    --tw-enter-opacity: 0;
+  }
+
+  @keyframes animateIn {
+    from {
+      opacity: var(--tw-enter-opacity, 1);
+      transform: translateX(var(--tw-enter-translate-x, 0))
+        translateY(var(--tw-enter-translate-y, 0));
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0) translateY(0);
+    }
+  }
+
+  .animate-spin-slow {
+    animation: spin 2s linear infinite;
+  }
+}
