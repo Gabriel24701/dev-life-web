@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, type KeyboardEvent } from "react";
 import {
   CheckSquare,
   Clock,
@@ -7,10 +8,16 @@ import {
   Target,
   TrendingUp,
   Github,
+  Plus,
+  Flame,
+  Trash2,
+  Loader2,
 } from "lucide-react";
 import { TaskList } from "@/components/tasks/TaskList";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { useTasks } from "@/hooks/useTasks";
+import { useHabits } from "@/hooks/useHabits";
+import type { Habit } from "@/types";
 
 // ─── Progress Bar ─────────────────────────────────────────────────────────────
 function ProgressBar({ value, max }: { value: number; max: number }) {
@@ -43,11 +50,7 @@ const tips = [
 function QuickTip() {
   const tip = tips[new Date().getDay() % tips.length];
   return (
-    <div className="
-      rounded-xl border border-indigo-100 dark:border-indigo-900/50
-      bg-indigo-50/50 dark:bg-indigo-500/5
-      px-4 py-3.5
-    ">
+    <div className="rounded-xl border border-indigo-100 dark:border-indigo-900/50 bg-indigo-50/50 dark:bg-indigo-500/5 px-4 py-3.5">
       <div className="flex items-start gap-3">
         <Zap className="h-4 w-4 text-indigo-400 shrink-0 mt-0.5" />
         <div>
@@ -63,96 +66,180 @@ function QuickTip() {
   );
 }
 
-// ─── Habits Placeholder ───────────────────────────────────────────────────────
-const mockHabits = [
-  { label: "Estudar 1h", done: true },
-  { label: "LeetCode diário", done: false },
-  { label: "Ler documentação", done: true },
-  { label: "Revisar PRs", done: false },
-];
-
-function HabitsWidget() {
+// ─── Habit Item ───────────────────────────────────────────────────────────────
+function HabitItem({
+  habit,
+  onIncrement,
+  onDelete,
+}: {
+  habit: Habit;
+  onIncrement: (id: number) => void;
+  onDelete: (id: number) => void;
+}) {
   return (
-    <div className="
-      rounded-xl border border-zinc-100 dark:border-zinc-800
-      bg-white dark:bg-zinc-900 p-5
-    ">
+    <div className="flex items-center gap-3 group">
+      {/* Complete / streak button */}
+      <button
+        onClick={() => onIncrement(habit.id)}
+        title="Marcar como feito hoje"
+        className="
+          h-7 w-7 rounded-lg flex items-center justify-center shrink-0
+          border-2 border-zinc-200 dark:border-zinc-700
+          hover:border-orange-400 hover:bg-orange-50 dark:hover:bg-orange-500/10
+          text-zinc-400 hover:text-orange-500
+          transition-all duration-150
+        "
+      >
+        <Flame className="h-3.5 w-3.5" />
+      </button>
+
+      {/* Title + streak */}
+      <div className="flex-1 min-w-0">
+        <p className="text-sm text-zinc-700 dark:text-zinc-300 truncate leading-none">
+          {habit.title}
+        </p>
+        {habit.streak > 0 && (
+          <span className="text-[10px] text-orange-500 font-semibold">
+            {habit.streak}d de ofensiva
+          </span>
+        )}
+      </div>
+
+      {/* Delete — visible on row hover */}
+      <button
+        onClick={() => onDelete(habit.id)}
+        aria-label="Remover hábito"
+        className="
+          h-6 w-6 inline-flex items-center justify-center rounded-md shrink-0
+          opacity-0 group-hover:opacity-100
+          text-zinc-300 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10
+          transition-all duration-150
+        "
+      >
+        <Trash2 className="h-3.5 w-3.5" />
+      </button>
+    </div>
+  );
+}
+
+// ─── Habits Widget ────────────────────────────────────────────────────────────
+function HabitsWidget() {
+  const { habits, isLoading, createHabit, incrementStreak, deleteHabit } = useHabits();
+  const [newTitle, setNewTitle] = useState("");
+  const [isAdding, setIsAdding] = useState(false);
+
+  const handleCreate = async () => {
+    const title = newTitle.trim();
+    if (!title) return;
+    setIsAdding(true);
+    await createHabit(title);
+    setNewTitle("");
+    setIsAdding(false);
+  };
+
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") handleCreate();
+  };
+
+  
+
+  return (
+    <div className="rounded-xl border border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5">
+      {/* Header */}
       <div className="flex items-center gap-2 mb-4">
         <Target className="h-4 w-4 text-indigo-400" />
         <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
           Hábitos de hoje
         </h3>
-        <span className="ml-auto text-xs text-zinc-400 bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 rounded">
-          Em breve
-        </span>
+        {!isLoading && (
+          <span className="ml-auto text-xs font-medium text-zinc-400 tabular-nums">
+            {habits.length} hábito{habits.length !== 1 ? "s" : ""}
+          </span>
+        )}
       </div>
-      <div className="space-y-2">
-        {mockHabits.map((h) => (
-          <div key={h.label} className="flex items-center gap-3">
-            <div
-              className={`h-4 w-4 rounded border-2 flex items-center justify-center shrink-0 transition-colors ${
-                h.done
-                  ? "bg-emerald-500 border-emerald-500"
-                  : "border-zinc-300 dark:border-zinc-700"
-              }`}
-            >
-              {h.done && (
-                <svg viewBox="0 0 10 8" fill="none" className="h-2.5 w-2.5">
-                  <path
-                    d="M1 4l3 3 5-6"
-                    stroke="white"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              )}
+
+      {/* List */}
+      <div className="space-y-3 mb-4 min-h-[40px]">
+        {isLoading ? (
+          // Skeleton
+          Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="flex items-center gap-3 animate-pulse">
+              <div className="h-7 w-7 rounded-lg bg-zinc-100 dark:bg-zinc-800 shrink-0" />
+              <div className="h-4 flex-1 rounded bg-zinc-100 dark:bg-zinc-800" />
             </div>
-            <span
-              className={`text-sm ${
-                h.done
-                  ? "line-through text-zinc-400 dark:text-zinc-600"
-                  : "text-zinc-700 dark:text-zinc-300"
-              }`}
-            >
-              {h.label}
-            </span>
-          </div>
-        ))}
+          ))
+        ) : habits.length === 0 ? (
+          <p className="text-xs text-zinc-400 dark:text-zinc-600 text-center py-3">
+            Nenhum hábito ainda. Adicione o primeiro abaixo.
+          </p>
+        ) : (
+          habits.map((h) => (
+            <HabitItem
+              key={h.id}
+              habit={h}
+              onIncrement={incrementStreak}
+              onDelete={deleteHabit}
+            />
+          ))
+        )}
+      </div>
+
+      {/* Inline create input */}
+      <div className="flex items-center gap-2 pt-3 border-t border-zinc-100 dark:border-zinc-800">
+        <input
+          type="text"
+          value={newTitle}
+          onChange={(e) => setNewTitle(e.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder="Novo hábito... (Enter para salvar)"
+          disabled={isAdding}
+          className="
+            flex-1 h-8 rounded-lg border border-zinc-200 dark:border-zinc-800
+            bg-transparent px-3 text-xs
+            text-zinc-900 dark:text-zinc-100
+            placeholder:text-zinc-400 dark:placeholder:text-zinc-600
+            focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent
+            disabled:opacity-50
+            transition-colors duration-150
+          "
+        />
+        <button
+          onClick={handleCreate}
+          disabled={isAdding || !newTitle.trim()}
+          aria-label="Adicionar hábito"
+          className="
+            h-8 w-8 flex items-center justify-center rounded-lg shrink-0
+            bg-indigo-500 hover:bg-indigo-600
+            disabled:opacity-40 disabled:pointer-events-none
+            text-white transition-colors duration-150
+          "
+        >
+          {isAdding ? (
+            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+          ) : (
+            <Plus className="h-3.5 w-3.5" />
+          )}
+        </button>
       </div>
     </div>
   );
 }
 
-// ─── Stack Badge ──────────────────────────────────────────────────────────────
+// ─── Activity Feed (placeholder) ──────────────────────────────────────────────
 function ActivityFeed() {
   return (
-    <div className="
-      rounded-xl border border-zinc-100 dark:border-zinc-800
-      bg-white dark:bg-zinc-900 p-5
-    ">
+    <div className="rounded-xl border border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5">
       <div className="flex items-center gap-2 mb-4">
         <Github className="h-4 w-4 text-zinc-400" />
         <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
-          Atividade recente
+          Atividade GitHub
         </h3>
-        <span className="ml-auto text-xs text-zinc-400 bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 rounded">
-          Em breve
-        </span>
       </div>
-      <div className="space-y-3">
-        {[
-          "feat: add task completion endpoint",
-          "fix: handle 422 validation errors",
-          "docs: update API contract",
-        ].map((msg, i) => (
-          <div key={i} className="flex items-start gap-2.5">
-            <div className="h-1.5 w-1.5 rounded-full bg-indigo-400 shrink-0 mt-2" />
-            <p className="text-xs text-zinc-500 dark:text-zinc-500 font-mono leading-relaxed">
-              {msg}
-            </p>
-          </div>
-        ))}
+      <div className="flex flex-col items-center justify-center py-6 text-center gap-2">
+        <Github className="h-8 w-8 text-zinc-200 dark:text-zinc-800" />
+        <p className="text-xs text-zinc-400 dark:text-zinc-600 leading-relaxed">
+          Sincronização com o GitHub em breve.
+        </p>
       </div>
     </div>
   );
@@ -161,6 +248,9 @@ function ActivityFeed() {
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default function DashboardPage() {
   const { stats, isLoading } = useTasks();
+  const { habits } = useHabits();
+
+  const maxStreak = habits && habits.length > 0 ? Math.max(...habits.map((h) => h.streak)) : 0;
 
   return (
     <div className="max-w-6xl mx-auto space-y-6">
@@ -187,7 +277,7 @@ export default function DashboardPage() {
         />
         <StatCard
           label="Sequência"
-          value="3d"
+          value={isLoading ? "—" : `${maxStreak}d`}
           icon={<Zap className="h-5 w-5" />}
           accent="rose"
           subtitle="dias consecutivos"
@@ -196,10 +286,7 @@ export default function DashboardPage() {
 
       {/* Progress + tip */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div className="
-          lg:col-span-2 rounded-xl border border-zinc-100 dark:border-zinc-800
-          bg-white dark:bg-zinc-900 px-5 py-4
-        ">
+        <div className="lg:col-span-2 rounded-xl border border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-5 py-4">
           <ProgressBar value={stats.completed} max={stats.total} />
         </div>
         <QuickTip />
@@ -207,12 +294,9 @@ export default function DashboardPage() {
 
       {/* Main content: Tasks + sidebar widgets */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Task list — wider */}
         <div className="lg:col-span-2">
           <TaskList />
         </div>
-
-        {/* Right widgets */}
         <div className="space-y-4">
           <HabitsWidget />
           <ActivityFeed />

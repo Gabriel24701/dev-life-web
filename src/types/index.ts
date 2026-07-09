@@ -13,6 +13,15 @@ export interface CreateTaskPayload {
   is_completed?: boolean;
 }
 
+// ─── Habit ───────────────────────────────────────────────────────────────────
+export interface Habit {
+  id: number;
+  title: string;
+  streak: number;
+  created_at: string;
+  owner_id: number;
+}
+
 // ─── Auth / User ─────────────────────────────────────────────────────────────
 export type SeniorityLevel = "junior" | "pleno" | "senior" | "staff";
 

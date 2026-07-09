@@ -22,69 +22,104 @@ interface AuthContextValue {
 // ─── Context ──────────────────────────────────────────────────────────────────
 const AuthContext = createContext<AuthContextValue | null>(null);
 
-const STORAGE_KEY = "devlife:user";
+const STORAGE_KEY_USER = "devlife:user";
+const STORAGE_KEY_TOKEN = "devlife:token";
 
 // ─── Provider ─────────────────────────────────────────────────────────────────
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Rehydrate from localStorage on mount
   useEffect(() => {
     try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) setUser(JSON.parse(stored));
+      const storedUser = localStorage.getItem(STORAGE_KEY_USER);
+      if (storedUser) setUser(JSON.parse(storedUser));
     } catch {
-      // ignore malformed JSON
     } finally {
       setIsLoading(false);
     }
   }, []);
 
-  const persist = (u: User) => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(u));
+  const persistAuth = (u: User, token?: string) => {
+    localStorage.setItem(STORAGE_KEY_USER, JSON.stringify(u));
+    if (token) localStorage.setItem(STORAGE_KEY_TOKEN, token);
     setUser(u);
   };
 
-  /** Mock login — swap for real API call when auth endpoint is ready */
   const login = useCallback(async ({ email, password }: LoginPayload) => {
-    // Simulate network latency
-    await new Promise((r) => setTimeout(r, 600));
-
     if (!email || !password) throw new Error("Preencha e-mail e senha.");
 
-    const mockUser: User = {
+    const params = new URLSearchParams();
+    params.append('username', email);
+    params.append('password', password);
+
+    const response = await fetch("http://localhost:8000/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: params
+    });
+
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error(err.detail || "Credenciais inválidas");
+    }
+
+    const data = await response.json();
+
+    const uiUser: User = {
       id: "usr_" + Math.random().toString(36).slice(2, 9),
       name: email.split("@")[0],
       email,
       seniority: "pleno",
       stack: "TypeScript / Python",
     };
-    persist(mockUser);
+    
+    persistAuth(uiUser, data.access_token);
   }, []);
 
-  /** Mock register */
   const register = useCallback(
     async ({ name, email, password, seniority, stack }: RegisterPayload) => {
-      await new Promise((r) => setTimeout(r, 800));
+      if (!name || !email || !password) throw new Error("Preencha todos os campos obrigatórios.");
 
-      if (!name || !email || !password)
-        throw new Error("Preencha todos os campos obrigatórios.");
+      const response = await fetch("http://localhost:8000/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password })
+      });
 
-      const mockUser: User = {
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({}));
+        throw new Error(err.detail || "Erro ao cadastrar na API");
+      }
+
+      const params = new URLSearchParams();
+      params.append('username', email);
+      params.append('password', password);
+
+      const loginRes = await fetch("http://localhost:8000/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: params
+      });
+
+      const loginData = await loginRes.json();
+
+      const uiUser: User = {
         id: "usr_" + Math.random().toString(36).slice(2, 9),
         name,
         email,
-        seniority,
-        stack,
+        seniority: seniority || "pleno",
+        stack: stack || "Não informada",
       };
-      persist(mockUser);
+      
+      persistAuth(uiUser, loginData.access_token);
     },
     []
   );
 
   const logout = useCallback(() => {
-    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(STORAGE_KEY_USER);
+    localStorage.removeItem(STORAGE_KEY_TOKEN);
     setUser(null);
   }, []);
 
