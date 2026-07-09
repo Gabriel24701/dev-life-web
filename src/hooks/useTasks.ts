@@ -61,7 +61,7 @@ export function useTasks() {
         prev.map((t) => (t.id === id ? { ...t, is_completed: !currentValue } : t))
       );
       try {
-        await tasksService.update(id, { is_completed: !currentValue });
+        await tasksService.update(id);
         toast(
           !currentValue ? "Tarefa concluída! 🎉" : "Tarefa reaberta.",
           "success"
