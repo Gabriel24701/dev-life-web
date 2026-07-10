@@ -10,6 +10,8 @@ import {
 } from "react";
 import type { User, LoginPayload, RegisterPayload } from "@/types";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface AuthContextValue {
   user: User | null;
@@ -53,7 +55,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     params.append('username', email);
     params.append('password', password);
 
-    const response = await fetch("http://localhost:8000/auth/login", {
+    const response = await fetch(`${API_URL}/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: params
@@ -81,7 +83,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     async ({ name, email, password, seniority, stack }: RegisterPayload) => {
       if (!name || !email || !password) throw new Error("Preencha todos os campos obrigatórios.");
 
-      const response = await fetch("http://localhost:8000/auth/register", {
+      const response = await fetch(`${API_URL}/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email, password })
@@ -96,7 +98,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       params.append('username', email);
       params.append('password', password);
 
-      const loginRes = await fetch("http://localhost:8000/auth/login", {
+      const loginRes = await fetch(`${API_URL}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: params
