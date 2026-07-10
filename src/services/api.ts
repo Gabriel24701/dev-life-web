@@ -30,7 +30,7 @@ async function http<T>(path: string, options?: RequestInit): Promise<T> {
 
 // ─── Tasks Service ────────────────────────────────────────────────────────────
 export const tasksService = {
-  getAll: (): Promise<Task[]> => http<Task[]>("/tasks/"),
+  getAll: (): Promise<Task[]> => http<Task[]>("/tasks"),
 
   create: (payload: CreateTaskPayload): Promise<Task> =>
     http<Task>("/tasks/", {
@@ -49,10 +49,10 @@ export const tasksService = {
 
 // ─── Habits Service ────────────────────────────────────────────────────────────
 export const habitsService = {
-  getAll: () => http<any[]>("/habits/"),
+  getAll: () => http<any[]>("/habits"),
 
   create: (title: string) =>
-    http<any>("/habits/", {
+    http<any>("/habits", {
       method: "POST",
       body: JSON.stringify({ title }),
     }),
