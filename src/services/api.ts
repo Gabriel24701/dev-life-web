@@ -1,13 +1,12 @@
 import type { Task, CreateTaskPayload } from "@/types";
 
-// ─── Config ──────────────────────────────────────────────────────────────────
-const BASE_URL = "http://localhost:8000";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
 // ─── HTTP Client ─────────────────────────────────────────────────────────────
 async function http<T>(path: string, options?: RequestInit): Promise<T> {
   const token = typeof window !== 'undefined' ? localStorage.getItem("devlife:token") : null;
 
-  const response = await fetch(`${BASE_URL}${path}`, {
+  const response = await fetch(`${API_URL}${path}`, {
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
@@ -50,23 +49,19 @@ export const tasksService = {
 
 // ─── Habits Service ────────────────────────────────────────────────────────────
 export const habitsService = {
-  /** GET /habits — busca os hábitos do usuário logado */
   getAll: () => http<any[]>("/habits/"),
 
-  /** POST /habits — cria um novo hábito */
   create: (title: string) =>
     http<any>("/habits/", {
       method: "POST",
       body: JSON.stringify({ title }),
     }),
 
-  /** PUT /habits/:id/increment — aumenta a ofensiva (streak) */
   increment: (id: number) =>
     http<any>(`/habits/${id}/increment`, {
       method: "PUT",
     }),
 
-  /** DELETE /habits/:id — exclui o hábito */
   delete: (id: number) =>
     http<void>(`/habits/${id}`, { method: "DELETE" }),
 };
