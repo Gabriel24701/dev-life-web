@@ -9,6 +9,7 @@ import {
   type ReactNode,
 } from "react";
 import type { User, LoginPayload, RegisterPayload } from "@/types";
+import { authService } from "@/services/api";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
@@ -42,9 +43,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const persistAuth = (u: User, token?: string) => {
+  const persistAuth = (u: User) => {
     localStorage.setItem(STORAGE_KEY_USER, JSON.stringify(u));
-    if (token) localStorage.setItem(STORAGE_KEY_TOKEN, token);
     setUser(u);
   };
 
@@ -67,20 +67,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     const data = await response.json();
+    localStorage.setItem(STORAGE_KEY_TOKEN, data.access_token);
 
-    const uiUser: User = {
-      id: "usr_" + Math.random().toString(36).slice(2, 9),
-      name: email.split("@")[0],
-      email,
-      seniority: "pleno",
-      stack: "TypeScript / Python",
-    };
-    
-    persistAuth(uiUser, data.access_token);
+    try {
+      const me = await authService.me();
+      persistAuth(me);
+    } catch (err) {
+      localStorage.removeItem(STORAGE_KEY_TOKEN);
+      throw err;
+    }
   }, []);
 
   const register = useCallback(
-    async ({ name, email, password, seniority, stack }: RegisterPayload) => {
+    async ({ name, email, password }: RegisterPayload) => {
       if (!name || !email || !password) throw new Error("Preencha todos os campos obrigatórios.");
 
       const response = await fetch(`${API_URL}/auth/register`, {
@@ -104,17 +103,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         body: params
       });
 
-      const loginData = await loginRes.json();
+      if (!loginRes.ok) {
+        throw new Error("Conta criada, mas falha ao autenticar automaticamente.");
+      }
 
-      const uiUser: User = {
-        id: "usr_" + Math.random().toString(36).slice(2, 9),
-        name,
-        email,
-        seniority: seniority || "pleno",
-        stack: stack || "Não informada",
-      };
-      
-      persistAuth(uiUser, loginData.access_token);
+      const loginData = await loginRes.json();
+      localStorage.setItem(STORAGE_KEY_TOKEN, loginData.access_token);
+
+      try {
+        const me = await authService.me();
+        persistAuth(me);
+      } catch (err) {
+        localStorage.removeItem(STORAGE_KEY_TOKEN);
+        throw err;
+      }
     },
     []
   );

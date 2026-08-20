@@ -23,13 +23,13 @@ const navItems = [
     label: "Tarefas",
     href: "/dashboard/tasks",
     icon: CheckSquare,
-    badge: "Em breve",
+    // badge removido — feature real, sem "Em breve"
   },
   {
     label: "Estudos",
     href: "/dashboard/studies",
     icon: BookOpen,
-    badge: "Em breve",
+    // badge removido — feature real, sem "Em breve"
   },
   {
     label: "Progresso",
@@ -42,14 +42,6 @@ const navItems = [
 const secondaryItems = [
   { label: "Configurações", href: "/dashboard/settings", icon: Settings },
 ];
-
-// ─── Seniority Badge ──────────────────────────────────────────────────────────
-const seniorityColor: Record<string, string> = {
-  junior: "bg-emerald-500/15 text-emerald-500",
-  pleno: "bg-indigo-500/15 text-indigo-400",
-  senior: "bg-amber-500/15 text-amber-500",
-  staff: "bg-rose-500/15 text-rose-400",
-};
 
 export function Sidebar() {
   const pathname = usePathname();
@@ -85,6 +77,7 @@ export function Sidebar() {
             <Link
               key={href}
               href={href}
+              prefetch={!badge}
               className={`
                 flex items-center gap-3 px-3 h-9 rounded-lg text-sm font-medium
                 transition-all duration-150
@@ -143,13 +136,9 @@ export function Sidebar() {
               <p className="text-xs font-semibold text-zinc-800 dark:text-zinc-200 truncate">
                 {user.name}
               </p>
-              <span
-                className={`text-[10px] font-medium px-1.5 py-0.5 rounded ${
-                  seniorityColor[user.seniority] ?? seniorityColor.pleno
-                }`}
-              >
-                {user.seniority}
-              </span>
+              <p className="text-[10px] text-zinc-400 dark:text-zinc-600 truncate">
+                {user.email}
+              </p>
             </div>
             {/* Logout */}
             <button

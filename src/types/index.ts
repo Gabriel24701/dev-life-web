@@ -23,14 +23,11 @@ export interface Habit {
 }
 
 // ─── Auth / User ─────────────────────────────────────────────────────────────
-export type SeniorityLevel = "junior" | "pleno" | "senior" | "staff";
-
 export interface User {
-  id: string;
+  id: number;
   name: string;
   email: string;
-  seniority: SeniorityLevel;
-  stack: string;
+  is_active: boolean;
 }
 
 export interface LoginPayload {
@@ -42,8 +39,6 @@ export interface RegisterPayload {
   name: string;
   email: string;
   password: string;
-  seniority: SeniorityLevel;
-  stack: string;
 }
 
 // ─── API Response ─────────────────────────────────────────────────────────────

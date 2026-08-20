@@ -1,4 +1,4 @@
-import type { Task, CreateTaskPayload } from "@/types";
+import type { Task, CreateTaskPayload, User } from "@/types";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
@@ -27,6 +27,11 @@ async function http<T>(path: string, options?: RequestInit): Promise<T> {
 
   return response.json() as Promise<T>;
 }
+
+// ─── Auth Service ──────────────────────────────────────────────────────────
+export const authService = {
+  me: (): Promise<User> => http<User>("/auth/me"),
+};
 
 // ─── Tasks Service ────────────────────────────────────────────────────────────
 export const tasksService = {
