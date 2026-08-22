@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { habitsService } from "@/services/api";
 import { useToast } from "@/contexts/ToastContext";
-import type { Habit } from "@/types";
+import type { Habit, CreateHabitPayload, UpdateHabitPayload } from "@/types";
 
 export function useHabits() {
   const [habits, setHabits] = useState<Habit[]>([]);
@@ -26,15 +26,35 @@ export function useHabits() {
     fetchHabits();
   }, [fetchHabits]);
 
-  const createHabit = useCallback(async (title: string) => {
+  const createHabit = useCallback(async (payload: CreateHabitPayload) => {
     try {
-      const newHabit = await habitsService.create(title);
+      const newHabit = await habitsService.create(payload);
       setHabits((prev) => [...prev, newHabit]);
       toast("Hábito criado!", "success");
+      return newHabit;
     } catch (err) {
       toast(err instanceof Error ? err.message : "Erro ao criar hábito.", "error");
+      return null;
     }
   }, [toast]);
+
+  const updateHabit = useCallback(
+    async (id: number, payload: UpdateHabitPayload) => {
+      const snapshot = habits.find((h) => h.id === id);
+      setHabits((prev) => prev.map((h) => (h.id === id ? { ...h, ...payload } : h)));
+      try {
+        const updated = await habitsService.update(id, payload);
+        setHabits((prev) => prev.map((h) => (h.id === id ? updated : h)));
+        toast("Hábito atualizado!", "success");
+        return updated;
+      } catch (err) {
+        if (snapshot) setHabits((prev) => prev.map((h) => (h.id === id ? snapshot : h)));
+        toast(err instanceof Error ? err.message : "Erro ao atualizar hábito.", "error");
+        return null;
+      }
+    },
+    [habits, toast]
+  );
 
   const incrementStreak = useCallback(async (id: number) => {
     try {
@@ -56,5 +76,5 @@ export function useHabits() {
     }
   }, [toast]);
 
-  return { habits, isLoading, createHabit, incrementStreak, deleteHabit };
+  return { habits, isLoading, createHabit, updateHabit, incrementStreak, deleteHabit };
 }

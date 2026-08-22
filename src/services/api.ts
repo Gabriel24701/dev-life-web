@@ -1,4 +1,4 @@
-import type { Task, CreateTaskPayload, UpdateTaskPayload, User } from "@/types";
+import type { Task, CreateTaskPayload, UpdateTaskPayload, Habit, CreateHabitPayload, UpdateHabitPayload, User } from "@/types";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
@@ -60,16 +60,22 @@ export const tasksService = {
 
 // ─── Habits Service ────────────────────────────────────────────────────────────
 export const habitsService = {
-  getAll: () => http<any[]>("/habits/"),
+  getAll: (): Promise<Habit[]> => http<Habit[]>("/habits/"),
 
-  create: (title: string) =>
-    http<any>("/habits/", {
+  create: (payload: CreateHabitPayload): Promise<Habit> =>
+    http<Habit>("/habits/", {
       method: "POST",
-      body: JSON.stringify({ title }),
+      body: JSON.stringify(payload),
     }),
 
-  increment: (id: number) =>
-    http<any>(`/habits/${id}/increment`, {
+  update: (id: number, payload: UpdateHabitPayload): Promise<Habit> =>
+    http<Habit>(`/habits/${id}/`, {
+      method: "PUT",
+      body: JSON.stringify(payload),
+    }),
+
+  increment: (id: number): Promise<Habit> =>
+    http<Habit>(`/habits/${id}/increment`, {
       method: "PUT",
     }),
 
