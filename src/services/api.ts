@@ -1,4 +1,4 @@
-import type { Task, CreateTaskPayload, User } from "@/types";
+import type { Task, CreateTaskPayload, UpdateTaskPayload, User } from "@/types";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
@@ -43,9 +43,15 @@ export const tasksService = {
       body: JSON.stringify(payload),
     }),
 
-  update: (id: number): Promise<Task> =>
+  toggleComplete: (id: number): Promise<Task> =>
     http<Task>(`/tasks/${id}/complete`, {
       method: "PUT",
+    }),
+
+  update: (id: number, payload: UpdateTaskPayload): Promise<Task> =>
+    http<Task>(`/tasks/${id}/`, {
+      method: "PUT",
+      body: JSON.stringify(payload),
     }),
 
   delete: (id: number): Promise<void> =>

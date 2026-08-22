@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { tasksService } from "@/services/api";
 import { useToast } from "@/contexts/ToastContext";
-import type { Task, CreateTaskPayload } from "@/types";
+import type { Task, CreateTaskPayload, UpdateTaskPayload } from "@/types";
 
 export function useTasks() {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -61,7 +61,7 @@ export function useTasks() {
         prev.map((t) => (t.id === id ? { ...t, is_completed: !currentValue } : t))
       );
       try {
-        await tasksService.update(id);
+        await tasksService.toggleComplete(id);
         toast(
           !currentValue ? "Tarefa concluída! 🎉" : "Tarefa reaberta.",
           "success"
@@ -78,6 +78,30 @@ export function useTasks() {
       }
     },
     [toast]
+  );
+
+  // ── Update task (optimistic) ────────────────────────────────────────────────
+  const updateTask = useCallback(
+    async (id: number, payload: UpdateTaskPayload) => {
+      const snapshot = tasks.find((t) => t.id === id);
+      setTasks((prev) =>
+        prev.map((t) => (t.id === id ? { ...t, ...payload } : t))
+      );
+      try {
+        const updated = await tasksService.update(id, payload);
+        setTasks((prev) => prev.map((t) => (t.id === id ? updated : t)));
+        toast("Tarefa atualizada!", "success");
+        return updated;
+      } catch (err) {
+        if (snapshot) setTasks((prev) => prev.map((t) => (t.id === id ? snapshot : t)));
+        toast(
+          err instanceof Error ? err.message : "Erro ao atualizar tarefa.",
+          "error"
+        );
+        return null;
+      }
+    },
+    [tasks, toast]
   );
 
   // ── Delete task (optimistic) ───────────────────────────────────────────────
@@ -110,6 +134,7 @@ export function useTasks() {
     fetchTasks,
     createTask,
     toggleTask,
+    updateTask,
     deleteTask,
     stats: { total: tasks.length, completed, pending },
   };

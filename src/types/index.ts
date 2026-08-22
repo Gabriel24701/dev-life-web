@@ -1,9 +1,13 @@
 // ─── Task ───────────────────────────────────────────────────────────────────
+export type TaskPriority = "low" | "medium" | "high";
+
 export interface Task {
   id: number;
   title: string;
   description: string;
   is_completed: boolean;
+  priority: TaskPriority;
+  tags: string | null;
   created_at: string;
 }
 
@@ -11,6 +15,15 @@ export interface CreateTaskPayload {
   title: string;
   description: string;
   is_completed?: boolean;
+  priority?: TaskPriority;
+  tags?: string;
+}
+
+export interface UpdateTaskPayload {
+  title?: string;
+  description?: string;
+  priority?: TaskPriority;
+  tags?: string;
 }
 
 // ─── Habit ───────────────────────────────────────────────────────────────────
