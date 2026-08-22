@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Plus, RefreshCw, ClipboardList, Filter } from "lucide-react";
 import { TaskItem } from "./TaskItem";
-import { CreateTaskModal } from "./CreateTaskModal";
+import { TaskFormModal } from "./TaskFormModal";
 import { Button } from "@/components/ui/Button";
 import { useTasks } from "@/hooks/useTasks";
 
@@ -47,7 +47,7 @@ function EmptyState({ onAdd }: { onAdd: () => void }) {
 type FilterType = "all" | "pending" | "done";
 
 export function TaskList() {
-  const { tasks, isLoading, isCreating, createTask, toggleTask, deleteTask, fetchTasks, stats } =
+  const { tasks, isLoading, createTask, updateTask, toggleTask, deleteTask, fetchTasks, stats } =
     useTasks();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [filter, setFilter] = useState<FilterType>("all");
@@ -57,10 +57,6 @@ export function TaskList() {
     if (filter === "done") return t.is_completed;
     return true;
   });
-
-  const handleCreate = async (title: string, description: string) => {
-    return createTask({ title, description, is_completed: false });
-  };
 
   const filters: { value: FilterType; label: string; count: number }[] = [
     { value: "all", label: "Todas", count: stats.total },
@@ -149,12 +145,12 @@ export function TaskList() {
         )}
       </div>
 
-      {/* Create modal */}
-      <CreateTaskModal
+      {/* Create/edit modal */}
+      <TaskFormModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        onCreate={handleCreate}
-        isCreating={isCreating}
+        onCreate={createTask}
+        onUpdate={updateTask}
       />
     </section>
   );
