@@ -30,9 +30,20 @@ export interface UpdateTaskPayload {
 export interface Habit {
   id: number;
   title: string;
+  description: string | null;
   streak: number;
   created_at: string;
   owner_id: number;
+}
+
+export interface CreateHabitPayload {
+  title: string;
+  description?: string;
+}
+
+export interface UpdateHabitPayload {
+  title?: string;
+  description?: string;
 }
 
 // ─── Auth / User ─────────────────────────────────────────────────────────────

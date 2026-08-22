@@ -132,7 +132,7 @@ function HabitsWidget() {
     const title = newTitle.trim();
     if (!title) return;
     setIsAdding(true);
-    await createHabit(title);
+    await createHabit({ title });
     setNewTitle("");
     setIsAdding(false);
   };
