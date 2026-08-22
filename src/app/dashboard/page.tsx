@@ -10,10 +10,12 @@ import {
   Github,
   Plus,
   Flame,
+  Pencil,
   Trash2,
   Loader2,
 } from "lucide-react";
 import { TaskList } from "@/components/tasks/TaskList";
+import { HabitFormModal } from "@/components/habits/HabitFormModal";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { useTasks } from "@/hooks/useTasks";
 import { useHabits } from "@/hooks/useHabits";
@@ -70,10 +72,12 @@ function QuickTip() {
 function HabitItem({
   habit,
   onIncrement,
+  onEdit,
   onDelete,
 }: {
   habit: Habit;
   onIncrement: (id: number) => void;
+  onEdit: (habit: Habit) => void;
   onDelete: (id: number) => void;
 }) {
   return (
@@ -105,28 +109,42 @@ function HabitItem({
         )}
       </div>
 
-      {/* Delete — visible on row hover */}
-      <button
-        onClick={() => onDelete(habit.id)}
-        aria-label="Remover hábito"
-        className="
-          h-6 w-6 inline-flex items-center justify-center rounded-md shrink-0
-          opacity-0 group-hover:opacity-100
-          text-zinc-300 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10
-          transition-all duration-150
-        "
-      >
-        <Trash2 className="h-3.5 w-3.5" />
-      </button>
+      {/* Edit + Delete — visible on row hover */}
+      <div className="flex items-center gap-0.5 shrink-0 opacity-0 group-hover:opacity-100 transition-all duration-150">
+        <button
+          onClick={() => onEdit(habit)}
+          aria-label="Editar hábito"
+          className="
+            h-6 w-6 inline-flex items-center justify-center rounded-md
+            text-zinc-300 hover:text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-500/10
+            transition-all duration-150
+          "
+        >
+          <Pencil className="h-3.5 w-3.5" />
+        </button>
+        <button
+          onClick={() => onDelete(habit.id)}
+          aria-label="Remover hábito"
+          className="
+            h-6 w-6 inline-flex items-center justify-center rounded-md
+            text-zinc-300 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10
+            transition-all duration-150
+          "
+        >
+          <Trash2 className="h-3.5 w-3.5" />
+        </button>
+      </div>
     </div>
   );
 }
 
 // ─── Habits Widget ────────────────────────────────────────────────────────────
 function HabitsWidget() {
-  const { habits, isLoading, createHabit, incrementStreak, deleteHabit } = useHabits();
+  const { habits, isLoading, createHabit, updateHabit, incrementStreak, deleteHabit } = useHabits();
   const [newTitle, setNewTitle] = useState("");
   const [isAdding, setIsAdding] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingHabit, setEditingHabit] = useState<Habit | null>(null);
 
   const handleCreate = async () => {
     const title = newTitle.trim();
@@ -141,7 +159,10 @@ function HabitsWidget() {
     if (e.key === "Enter") handleCreate();
   };
 
-  
+  const openEditModal = (habit: Habit) => {
+    setEditingHabit(habit);
+    setIsModalOpen(true);
+  };
 
   return (
     <div className="rounded-xl border border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5">
@@ -178,6 +199,7 @@ function HabitsWidget() {
               key={h.id}
               habit={h}
               onIncrement={incrementStreak}
+              onEdit={openEditModal}
               onDelete={deleteHabit}
             />
           ))
@@ -221,6 +243,14 @@ function HabitsWidget() {
           )}
         </button>
       </div>
+
+      <HabitFormModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        habit={editingHabit}
+        onCreate={createHabit}
+        onUpdate={updateHabit}
+      />
     </div>
   );
 }
