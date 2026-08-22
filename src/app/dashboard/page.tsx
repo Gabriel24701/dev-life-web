@@ -102,6 +102,11 @@ function HabitItem({
         <p className="text-sm text-zinc-700 dark:text-zinc-300 truncate leading-none">
           {habit.title}
         </p>
+        {habit.description && (
+          <p className="text-xs text-zinc-500 dark:text-zinc-500 leading-relaxed mt-1 line-clamp-2">
+            {habit.description}
+          </p>
+        )}
         {habit.streak > 0 && (
           <span className="text-[10px] text-orange-500 font-semibold">
             {habit.streak}d de ofensiva
