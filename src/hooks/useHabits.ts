@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { habitsService } from "@/services/api";
+import { habitsService, ApiError } from "@/services/api";
 import { useToast } from "@/contexts/ToastContext";
 import type { Habit, CreateHabitPayload, UpdateHabitPayload } from "@/types";
 
@@ -62,7 +62,11 @@ export function useHabits() {
       setHabits((prev) => prev.map((h) => (h.id === id ? updated : h)));
       toast("Ofensiva atualizada! 🔥", "success");
     } catch (err) {
-      toast(err instanceof Error ? err.message : "Erro ao atualizar ofensiva.", "error");
+      if (err instanceof ApiError && err.status === 409) {
+        toast("Hábito já concluído hoje! 🎉", "info");
+      } else {
+        toast(err instanceof Error ? err.message : "Erro ao atualizar ofensiva.", "error");
+      }
     }
   }, [toast]);
 
