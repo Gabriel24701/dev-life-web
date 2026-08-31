@@ -1,11 +1,32 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { habitsService } from "@/services/api";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+  type ReactNode,
+} from "react";
+import { habitsService, ApiError } from "@/services/api";
 import { useToast } from "@/contexts/ToastContext";
 import type { Habit, CreateHabitPayload, UpdateHabitPayload } from "@/types";
 
-export function useHabits() {
+// ─── Types ────────────────────────────────────────────────────────────────────
+interface HabitsContextValue {
+  habits: Habit[];
+  isLoading: boolean;
+  createHabit: (payload: CreateHabitPayload) => Promise<Habit | null>;
+  updateHabit: (id: number, payload: UpdateHabitPayload) => Promise<Habit | null>;
+  incrementStreak: (id: number) => Promise<void>;
+  deleteHabit: (id: number) => Promise<void>;
+}
+
+// ─── Context ──────────────────────────────────────────────────────────────────
+const HabitsContext = createContext<HabitsContextValue | null>(null);
+
+// ─── Provider ─────────────────────────────────────────────────────────────────
+export function HabitsProvider({ children }: { children: ReactNode }) {
   const [habits, setHabits] = useState<Habit[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
@@ -62,7 +83,11 @@ export function useHabits() {
       setHabits((prev) => prev.map((h) => (h.id === id ? updated : h)));
       toast("Ofensiva atualizada! 🔥", "success");
     } catch (err) {
-      toast(err instanceof Error ? err.message : "Erro ao atualizar ofensiva.", "error");
+      if (err instanceof ApiError && err.status === 409) {
+        toast("Hábito já concluído hoje! 🎉", "info");
+      } else {
+        toast(err instanceof Error ? err.message : "Erro ao atualizar ofensiva.", "error");
+      }
     }
   }, [toast]);
 
@@ -76,5 +101,18 @@ export function useHabits() {
     }
   }, [toast]);
 
-  return { habits, isLoading, createHabit, updateHabit, incrementStreak, deleteHabit };
+  return (
+    <HabitsContext.Provider
+      value={{ habits, isLoading, createHabit, updateHabit, incrementStreak, deleteHabit }}
+    >
+      {children}
+    </HabitsContext.Provider>
+  );
+}
+
+// ─── Hook ──────────────────────────────────────────────────────────────────────
+export function useHabitsContext() {
+  const ctx = useContext(HabitsContext);
+  if (!ctx) throw new Error("useHabitsContext must be used inside <HabitsProvider>");
+  return ctx;
 }

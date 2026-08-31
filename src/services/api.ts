@@ -2,6 +2,16 @@ import type { Task, CreateTaskPayload, UpdateTaskPayload, Habit, CreateHabitPayl
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
+// ─── API Error ────────────────────────────────────────────────────────────────
+export class ApiError extends Error {
+  status: number;
+  constructor(message: string, status: number) {
+    super(message);
+    this.name = "ApiError";
+    this.status = status;
+  }
+}
+
 // ─── HTTP Client ─────────────────────────────────────────────────────────────
 async function http<T>(path: string, options?: RequestInit): Promise<T> {
   const token = typeof window !== 'undefined' ? localStorage.getItem("devlife:token") : null;
@@ -18,8 +28,9 @@ async function http<T>(path: string, options?: RequestInit): Promise<T> {
 
   if (!response.ok) {
     const body = await response.json().catch(() => ({}));
-    throw new Error(
-      body?.detail ?? body?.message ?? `HTTP ${response.status}: ${response.statusText}`
+    throw new ApiError(
+      body?.detail ?? body?.message ?? `HTTP ${response.status}: ${response.statusText}`,
+      response.status
     );
   }
 

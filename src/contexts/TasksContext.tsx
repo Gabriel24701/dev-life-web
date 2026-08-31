@@ -1,17 +1,40 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+  type ReactNode,
+} from "react";
 import { tasksService } from "@/services/api";
 import { useToast } from "@/contexts/ToastContext";
 import type { Task, CreateTaskPayload, UpdateTaskPayload } from "@/types";
 
-export function useTasks() {
+// ─── Types ────────────────────────────────────────────────────────────────────
+interface TasksContextValue {
+  tasks: Task[];
+  isLoading: boolean;
+  isCreating: boolean;
+  fetchTasks: () => Promise<void>;
+  createTask: (payload: CreateTaskPayload) => Promise<Task | null>;
+  toggleTask: (id: number, currentValue: boolean) => Promise<void>;
+  updateTask: (id: number, payload: UpdateTaskPayload) => Promise<Task | null>;
+  deleteTask: (id: number) => Promise<void>;
+  stats: { total: number; completed: number; pending: number };
+}
+
+// ─── Context ──────────────────────────────────────────────────────────────────
+const TasksContext = createContext<TasksContextValue | null>(null);
+
+// ─── Provider ─────────────────────────────────────────────────────────────────
+export function TasksProvider({ children }: { children: ReactNode }) {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isCreating, setIsCreating] = useState(false);
   const { toast } = useToast();
 
-  // ── Fetch all tasks ────────────────────────────────────────────────────────
   const fetchTasks = useCallback(async () => {
     setIsLoading(true);
     try {
@@ -31,7 +54,6 @@ export function useTasks() {
     fetchTasks();
   }, [fetchTasks]);
 
-  // ── Create task ────────────────────────────────────────────────────────────
   const createTask = useCallback(
     async (payload: CreateTaskPayload) => {
       setIsCreating(true);
@@ -53,10 +75,8 @@ export function useTasks() {
     [toast]
   );
 
-  // ── Toggle completion (optimistic update) ─────────────────────────────────
   const toggleTask = useCallback(
     async (id: number, currentValue: boolean) => {
-      // Optimistic
       setTasks((prev) =>
         prev.map((t) => (t.id === id ? { ...t, is_completed: !currentValue } : t))
       );
@@ -67,7 +87,6 @@ export function useTasks() {
           "success"
         );
       } catch (err) {
-        // Rollback on failure
         setTasks((prev) =>
           prev.map((t) => (t.id === id ? { ...t, is_completed: currentValue } : t))
         );
@@ -80,7 +99,6 @@ export function useTasks() {
     [toast]
   );
 
-  // ── Update task (optimistic) ────────────────────────────────────────────────
   const updateTask = useCallback(
     async (id: number, payload: UpdateTaskPayload) => {
       const snapshot = tasks.find((t) => t.id === id);
@@ -104,7 +122,6 @@ export function useTasks() {
     [tasks, toast]
   );
 
-  // ── Delete task (optimistic) ───────────────────────────────────────────────
   const deleteTask = useCallback(
     async (id: number) => {
       const snapshot = tasks.find((t) => t.id === id);
@@ -123,19 +140,31 @@ export function useTasks() {
     [tasks, toast]
   );
 
-  // ── Derived stats ─────────────────────────────────────────────────────────
   const completed = tasks.filter((t) => t.is_completed).length;
   const pending = tasks.length - completed;
 
-  return {
-    tasks,
-    isLoading,
-    isCreating,
-    fetchTasks,
-    createTask,
-    toggleTask,
-    updateTask,
-    deleteTask,
-    stats: { total: tasks.length, completed, pending },
-  };
+  return (
+    <TasksContext.Provider
+      value={{
+        tasks,
+        isLoading,
+        isCreating,
+        fetchTasks,
+        createTask,
+        toggleTask,
+        updateTask,
+        deleteTask,
+        stats: { total: tasks.length, completed, pending },
+      }}
+    >
+      {children}
+    </TasksContext.Provider>
+  );
+}
+
+// ─── Hook ──────────────────────────────────────────────────────────────────────
+export function useTasksContext() {
+  const ctx = useContext(TasksContext);
+  if (!ctx) throw new Error("useTasksContext must be used inside <TasksProvider>");
+  return ctx;
 }
