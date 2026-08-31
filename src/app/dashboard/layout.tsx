@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { DashboardHeader } from "@/components/layout/DashboardHeader";
@@ -15,6 +15,7 @@ export default function DashboardLayout({
 }) {
   const { user, isLoading } = useAuth();
   const router = useRouter();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   // Redirect unauthenticated users
   useEffect(() => {
@@ -40,9 +41,9 @@ export default function DashboardLayout({
     <TasksProvider>
       <HabitsProvider>
         <div className="flex h-screen overflow-hidden bg-zinc-50/50 dark:bg-zinc-950">
-          <Sidebar />
+          <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
           <div className="flex-1 flex flex-col overflow-hidden">
-            <DashboardHeader />
+            <DashboardHeader onMenuClick={() => setIsSidebarOpen(true)} />
             <main className="flex-1 overflow-y-auto p-6">
               {children}
             </main>

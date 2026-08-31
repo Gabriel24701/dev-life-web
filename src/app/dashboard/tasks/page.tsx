@@ -85,8 +85,8 @@ export default function TasksPage() {
       </div>
 
       <section className="rounded-2xl border border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 overflow-hidden">
-        <div className="flex items-center justify-between px-6 py-3 border-b border-zinc-100 dark:border-zinc-800">
-          <div className="flex items-center gap-1">
+        <div className="flex items-center justify-between gap-2 px-6 py-3 border-b border-zinc-100 dark:border-zinc-800 flex-wrap">
+          <div className="flex items-center gap-1 flex-wrap">
             <Filter className="h-3.5 w-3.5 text-zinc-400 mr-1" />
             {statusFilters.map((f) => (
               <button
@@ -115,7 +115,7 @@ export default function TasksPage() {
           </button>
         </div>
 
-        <div className="flex items-center gap-1.5 px-6 py-3 border-b border-zinc-100 dark:border-zinc-800">
+        <div className="flex items-center gap-1.5 px-6 py-3 border-b border-zinc-100 dark:border-zinc-800 flex-wrap">
           <span className="text-xs text-zinc-400 mr-1">Prioridade:</span>
           {priorityFilters.map((f) => (
             <button
