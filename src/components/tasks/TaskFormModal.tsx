@@ -120,11 +120,12 @@ export function TaskFormModal({
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+          <label htmlFor="priority-select" className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
             Prioridade
           </label>
           <div className="relative">
             <select
+              id="priority-select"
               value={priority}
               onChange={(e) => setPriority(e.target.value as TaskPriority)}
               className="
