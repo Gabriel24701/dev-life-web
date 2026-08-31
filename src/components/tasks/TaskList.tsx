@@ -5,7 +5,7 @@ import { Plus, RefreshCw, ClipboardList, Filter } from "lucide-react";
 import { TaskItem } from "./TaskItem";
 import { TaskFormModal } from "./TaskFormModal";
 import { Button } from "@/components/ui/Button";
-import { useTasks } from "@/hooks/useTasks";
+import { useTasksContext } from "@/contexts/TasksContext";
 
 // ─── Skeleton ─────────────────────────────────────────────────────────────────
 function TaskSkeleton() {
@@ -48,7 +48,7 @@ type FilterType = "all" | "pending" | "done";
 
 export function TaskList() {
   const { tasks, isLoading, createTask, updateTask, toggleTask, deleteTask, fetchTasks, stats } =
-    useTasks();
+    useTasksContext();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [filter, setFilter] = useState<FilterType>("all");
 

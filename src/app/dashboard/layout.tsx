@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { DashboardHeader } from "@/components/layout/DashboardHeader";
 import { useAuth } from "@/contexts/AuthContext";
+import { TasksProvider } from "@/contexts/TasksContext";
+import { HabitsProvider } from "@/contexts/HabitsContext";
 
 export default function DashboardLayout({
   children,
@@ -35,14 +37,18 @@ export default function DashboardLayout({
   if (!user) return null;
 
   return (
-    <div className="flex h-screen overflow-hidden bg-zinc-50/50 dark:bg-zinc-950">
-      <Sidebar />
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <DashboardHeader />
-        <main className="flex-1 overflow-y-auto p-6">
-          {children}
-        </main>
-      </div>
-    </div>
+    <TasksProvider>
+      <HabitsProvider>
+        <div className="flex h-screen overflow-hidden bg-zinc-50/50 dark:bg-zinc-950">
+          <Sidebar />
+          <div className="flex-1 flex flex-col overflow-hidden">
+            <DashboardHeader />
+            <main className="flex-1 overflow-y-auto p-6">
+              {children}
+            </main>
+          </div>
+        </div>
+      </HabitsProvider>
+    </TasksProvider>
   );
 }
