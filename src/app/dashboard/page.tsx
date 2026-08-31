@@ -81,7 +81,7 @@ function HabitItem({
   onDelete: (id: number) => void;
 }) {
   return (
-    <div className="flex items-center gap-3 group">
+    <div className="flex items-center gap-3">
       {/* Complete / streak button */}
       <button
         onClick={() => onIncrement(habit.id)}
@@ -109,8 +109,8 @@ function HabitItem({
         )}
       </div>
 
-      {/* Edit + Delete — visible on row hover */}
-      <div className="flex items-center gap-0.5 shrink-0 opacity-0 group-hover:opacity-100 transition-all duration-150">
+      {/* Edit + Delete — sempre visíveis (touch-friendly) */}
+      <div className="flex items-center gap-0.5 shrink-0 transition-all duration-150">
         <button
           onClick={() => onEdit(habit)}
           aria-label="Editar hábito"

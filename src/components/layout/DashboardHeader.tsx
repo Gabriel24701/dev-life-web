@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell } from "lucide-react";
+import { Bell, Menu } from "lucide-react";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -11,7 +11,11 @@ function getGreeting() {
   return "Boa noite";
 }
 
-export function DashboardHeader() {
+interface DashboardHeaderProps {
+  onMenuClick: () => void;
+}
+
+export function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
   const { user } = useAuth();
 
   return (
@@ -21,17 +25,31 @@ export function DashboardHeader() {
       bg-white/80 dark:bg-zinc-950/80
       backdrop-blur-sm sticky top-0 z-20
     ">
-      <div>
-        <h1 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
-          {getGreeting()}, <span className="text-indigo-500">{user?.name ?? "dev"}</span> 👋
-        </h1>
-        <p className="text-xs text-zinc-400 dark:text-zinc-600">
-          {new Date().toLocaleDateString("pt-BR", {
-            weekday: "long",
-            day: "numeric",
-            month: "long",
-          })}
-        </p>
+      <div className="flex items-center gap-3 min-w-0">
+        <button
+          onClick={onMenuClick}
+          className="
+            lg:hidden h-9 w-9 inline-flex items-center justify-center rounded-lg shrink-0
+            text-zinc-500 dark:text-zinc-400
+            hover:bg-zinc-100 dark:hover:bg-zinc-800
+            transition-colors duration-150
+          "
+          aria-label="Abrir menu"
+        >
+          <Menu className="h-5 w-5" />
+        </button>
+        <div className="min-w-0">
+          <h1 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 truncate">
+            {getGreeting()}, <span className="text-indigo-500">{user?.name ?? "dev"}</span> 👋
+          </h1>
+          <p className="text-xs text-zinc-400 dark:text-zinc-600 truncate">
+            {new Date().toLocaleDateString("pt-BR", {
+              weekday: "long",
+              day: "numeric",
+              month: "long",
+            })}
+          </p>
+        </div>
       </div>
 
       <div className="flex items-center gap-2">

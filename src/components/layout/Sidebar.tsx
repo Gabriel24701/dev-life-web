@@ -43,17 +43,37 @@ const secondaryItems = [
   { label: "Configurações", href: "/dashboard/settings", icon: Settings },
 ];
 
-export function Sidebar() {
+interface SidebarProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+export function Sidebar({ isOpen, onClose }: SidebarProps) {
   const pathname = usePathname();
   const { user, logout } = useAuth();
 
   return (
-    <aside className="
-      w-60 shrink-0 flex flex-col
-      bg-[rgb(var(--sidebar-bg))] dark:bg-zinc-950
-      border-r border-[rgb(var(--sidebar-border))]
-      h-screen sticky top-0
-    ">
+    <>
+      {/* Backdrop — só mobile, clicável pra fechar */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm lg:hidden"
+          onClick={onClose}
+          aria-hidden
+        />
+      )}
+
+      <aside
+        className={`
+          fixed lg:sticky top-0 left-0 z-50
+          h-screen w-60 shrink-0 flex flex-col
+          bg-[rgb(var(--sidebar-bg))] dark:bg-zinc-950
+          border-r border-[rgb(var(--sidebar-border))]
+          transform transition-transform duration-300 ease-in-out
+          ${isOpen ? "translate-x-0" : "-translate-x-full"}
+          lg:translate-x-0
+        `}
+      >
       {/* Logo */}
       <div className="h-16 flex items-center px-5 border-b border-zinc-100 dark:border-zinc-800/50">
         <div className="flex items-center gap-2.5">
@@ -78,6 +98,7 @@ export function Sidebar() {
               key={href}
               href={href}
               prefetch={!badge}
+              onClick={onClose}
               className={`
                 flex items-center gap-3 px-3 h-9 rounded-lg text-sm font-medium
                 transition-all duration-150
@@ -107,6 +128,7 @@ export function Sidebar() {
             <Link
               key={href}
               href={href}
+              onClick={onClose}
               className="
                 flex items-center gap-3 px-3 h-9 rounded-lg text-sm font-medium
                 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100
@@ -155,6 +177,7 @@ export function Sidebar() {
           </div>
         </div>
       )}
-    </aside>
+      </aside>
+    </>
   );
 }
