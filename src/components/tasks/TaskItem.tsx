@@ -37,7 +37,7 @@ export function TaskItem({ task, onToggle, onDelete, onEdit }: TaskItemProps) {
   return (
     <div
       className={`
-        group rounded-xl border transition-all duration-200
+        rounded-xl border transition-all duration-200
         ${
           task.is_completed
             ? "border-zinc-100 dark:border-zinc-800/50 bg-zinc-50/50 dark:bg-zinc-900/30"
@@ -115,8 +115,9 @@ export function TaskItem({ task, onToggle, onDelete, onEdit }: TaskItemProps) {
           )}
         </div>
 
-        {/* Edit + Delete — visible on hover */}
-        <div className="flex items-center gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-all duration-150">
+        {/* Edit + Delete — sempre visíveis (group-hover não existe de forma
+            confiável em touchscreen) */}
+        <div className="flex items-center gap-1 shrink-0 transition-all duration-150">
           {onEdit && (
             <button
               onClick={() => onEdit(task)}
