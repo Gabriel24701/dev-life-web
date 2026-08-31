@@ -17,8 +17,8 @@ import {
 import { TaskList } from "@/components/tasks/TaskList";
 import { HabitFormModal } from "@/components/habits/HabitFormModal";
 import { StatCard } from "@/components/dashboard/StatCard";
-import { useTasks } from "@/hooks/useTasks";
-import { useHabits } from "@/hooks/useHabits";
+import { useTasksContext } from "@/contexts/TasksContext";
+import { useHabitsContext } from "@/contexts/HabitsContext";
 import type { Habit } from "@/types";
 
 // ─── Progress Bar ─────────────────────────────────────────────────────────────
@@ -140,7 +140,7 @@ function HabitItem({
 
 // ─── Habits Widget ────────────────────────────────────────────────────────────
 function HabitsWidget() {
-  const { habits, isLoading, createHabit, updateHabit, incrementStreak, deleteHabit } = useHabits();
+  const { habits, isLoading, createHabit, updateHabit, incrementStreak, deleteHabit } = useHabitsContext();
   const [newTitle, setNewTitle] = useState("");
   const [isAdding, setIsAdding] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -277,8 +277,8 @@ function ActivityFeed() {
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default function DashboardPage() {
-  const { stats, isLoading } = useTasks();
-  const { habits } = useHabits();
+  const { stats, isLoading } = useTasksContext();
+  const { habits } = useHabitsContext();
 
   const maxStreak = habits && habits.length > 0 ? Math.max(...habits.map((h) => h.streak)) : 0;
 

@@ -5,7 +5,7 @@ import { Plus, RefreshCw, ClipboardList, Filter } from "lucide-react";
 import { TaskItem } from "@/components/tasks/TaskItem";
 import { TaskFormModal } from "@/components/tasks/TaskFormModal";
 import { Button } from "@/components/ui/Button";
-import { useTasks } from "@/hooks/useTasks";
+import { useTasksContext } from "@/contexts/TasksContext";
 import type { Task, TaskPriority } from "@/types";
 
 type StatusFilter = "all" | "pending" | "done";
@@ -34,7 +34,7 @@ function TaskSkeleton() {
 
 export default function TasksPage() {
   const { tasks, isLoading, createTask, updateTask, toggleTask, deleteTask, fetchTasks, stats } =
-    useTasks();
+    useTasksContext();
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [priorityFilter, setPriorityFilter] = useState<PriorityFilter>("all");
   const [isModalOpen, setIsModalOpen] = useState(false);
