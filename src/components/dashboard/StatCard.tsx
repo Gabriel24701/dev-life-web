@@ -47,13 +47,13 @@ export function StatCard({
       <div className={`h-10 w-10 rounded-lg flex items-center justify-center shrink-0 ${colors.icon}`}>
         {icon}
       </div>
-      <div>
-        <p className="text-xs font-medium text-zinc-500 dark:text-zinc-500 uppercase tracking-wide">
+      <div className="min-w-0 flex-1">
+        <p className="text-xs font-medium text-zinc-500 dark:text-zinc-500 uppercase tracking-wide truncate">
           {label}
         </p>
-        <p className={`text-2xl font-bold mt-0.5 ${colors.value}`}>{value}</p>
+        <p className={`text-2xl font-bold mt-0.5 truncate ${colors.value}`}>{value}</p>
         {subtitle && (
-          <p className="text-xs text-zinc-400 dark:text-zinc-600 mt-0.5">{subtitle}</p>
+          <p className="text-xs text-zinc-400 dark:text-zinc-600 mt-0.5 truncate">{subtitle}</p>
         )}
       </div>
     </div>
