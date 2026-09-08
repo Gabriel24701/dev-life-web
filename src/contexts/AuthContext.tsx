@@ -19,6 +19,7 @@ interface AuthContextValue {
   isLoading: boolean;
   login: (payload: LoginPayload) => Promise<void>;
   register: (payload: RegisterPayload) => Promise<void>;
+  loginWithGoogle: (credential: string) => Promise<void>;
   logout: () => void;
   updateName: (name: string) => Promise<void>;
 }
@@ -49,6 +50,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(u);
   };
 
+  // Salva o token e resolve o usuário via /auth/me — compartilhado por
+  // login, register e loginWithGoogle, que terminam todos com o mesmo
+  // passo (token em mãos -> buscar usuário -> persistir), incluindo o
+  // rollback do token se /auth/me falhar.
+  const finalizeLogin = async (accessToken: string) => {
+    localStorage.setItem(STORAGE_KEY_TOKEN, accessToken);
+    try {
+      const me = await authService.me();
+      persistAuth(me);
+    } catch (err) {
+      localStorage.removeItem(STORAGE_KEY_TOKEN);
+      throw err;
+    }
+  };
+
   const login = useCallback(async ({ email, password }: LoginPayload) => {
     if (!email || !password) throw new Error("Preencha e-mail e senha.");
 
@@ -68,15 +84,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     const data = await response.json();
-    localStorage.setItem(STORAGE_KEY_TOKEN, data.access_token);
-
-    try {
-      const me = await authService.me();
-      persistAuth(me);
-    } catch (err) {
-      localStorage.removeItem(STORAGE_KEY_TOKEN);
-      throw err;
-    }
+    await finalizeLogin(data.access_token);
   }, []);
 
   const register = useCallback(
@@ -109,18 +117,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       const loginData = await loginRes.json();
-      localStorage.setItem(STORAGE_KEY_TOKEN, loginData.access_token);
-
-      try {
-        const me = await authService.me();
-        persistAuth(me);
-      } catch (err) {
-        localStorage.removeItem(STORAGE_KEY_TOKEN);
-        throw err;
-      }
+      await finalizeLogin(loginData.access_token);
     },
     []
   );
+
+  const loginWithGoogle = useCallback(async (credential: string) => {
+    const data = await authService.loginWithGoogle(credential);
+    await finalizeLogin(data.access_token);
+  }, []);
 
   const logout = useCallback(() => {
     localStorage.removeItem(STORAGE_KEY_USER);
@@ -134,7 +139,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, login, register, logout, updateName }}>
+    <AuthContext.Provider
+      value={{ user, isLoading, login, register, loginWithGoogle, logout, updateName }}
+    >
       {children}
     </AuthContext.Provider>
   );
