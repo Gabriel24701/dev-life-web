@@ -7,11 +7,13 @@ import { Code2, ArrowRight } from "lucide-react";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
+import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/contexts/ToastContext";
+import { ApiError } from "@/services/api";
 
 export default function RegisterPage() {
-  const { register } = useAuth();
+  const { register, loginWithGoogle } = useAuth();
   const { toast } = useToast();
   const router = useRouter();
 
@@ -48,6 +50,20 @@ export default function RegisterPage() {
       toast(err instanceof Error ? err.message : "Erro ao criar conta.", "error");
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleGoogleCredential = async (credential: string) => {
+    try {
+      await loginWithGoogle(credential);
+      toast("Conta criada! Bem-vindo ao Dev Life 🚀", "success");
+      router.push("/dashboard");
+    } catch (err) {
+      if (err instanceof ApiError && err.status === 409) {
+        toast(err.message, "info");
+      } else {
+        toast(err instanceof Error ? err.message : "Erro ao continuar com Google.", "error");
+      }
     }
   };
 
@@ -113,6 +129,19 @@ export default function RegisterPage() {
                 {!isLoading && <ArrowRight className="h-4 w-4" />}
               </Button>
             </form>
+
+            <div className="relative my-5">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-zinc-100 dark:border-zinc-800" />
+              </div>
+              <div className="relative flex justify-center">
+                <span className="bg-white dark:bg-zinc-900 px-3 text-xs text-zinc-400 dark:text-zinc-600">
+                  ou
+                </span>
+              </div>
+            </div>
+
+            <GoogleSignInButton onCredential={handleGoogleCredential} text="signup_with" />
           </div>
 
           <p className="text-center text-sm text-zinc-500 dark:text-zinc-500">

@@ -97,9 +97,38 @@ Endpoints consumidos:
 
 ---
 
-## Auth (mock)
+## Auth
 
-O fluxo de autenticação é **mockado no front-end** — nenhum endpoint de auth é chamado ainda. O usuário é salvo em `localStorage` com a chave `devlife:user`. Para conectar à API real, substitua as funções `login` e `register` em `src/contexts/AuthContext.tsx`.
+Autenticação real contra a API (`/auth/login`, `/auth/register`, `/auth/me`), mais **login com Google** via Google Identity Services. Token e usuário ficam em `localStorage` (`devlife:token` / `devlife:user`). Lógica centralizada em `src/contexts/AuthContext.tsx`.
+
+### Login com Google — configuração necessária
+
+O botão "Entrar com Google" (em `/auth/login` e `/auth/register`) usa o [Google Identity Services](https://developers.google.com/identity/gsi/web) — precisa de um Client ID OAuth configurado no Google Cloud Console antes de funcionar.
+
+**1. Criar as credenciais no Google Cloud Console:**
+1. Acesse [console.cloud.google.com](https://console.cloud.google.com/) e crie (ou selecione) um projeto.
+2. Vá em **APIs & Services → Credentials → Create Credentials → OAuth client ID**.
+3. Tipo de aplicação: **Web application**.
+4. Em **Authorized JavaScript origins**, adicione as origens de onde o app roda (sem path, sem barra final):
+   - `http://localhost:3000` (dev local)
+   - `https://<seu-domínio-de-produção>`
+5. **Authorized redirect URIs** não é necessário para o fluxo usado aqui (Google Identity Services faz a autenticação via popup/One Tap no próprio client-side, sem redirect de servidor).
+6. Copie o **Client ID** gerado (formato `xxxxx.apps.googleusercontent.com`).
+
+**2. Configurar a variável de ambiente:**
+
+| Variável | Onde configurar |
+|---|---|
+| `NEXT_PUBLIC_GOOGLE_CLIENT_ID` | `.env.local` em desenvolvimento; variável de ambiente do provedor de hosting (ex: Vercel → Project Settings → Environment Variables) em produção |
+
+```bash
+# .env.local
+NEXT_PUBLIC_GOOGLE_CLIENT_ID=xxxxx.apps.googleusercontent.com
+```
+
+Sem essa variável, o botão do Google simplesmente **não é renderizado** (falha silenciosa e segura — login por senha continua funcionando normalmente).
+
+**3. Configurar o mesmo Client ID no backend:** o backend (`dev-life-api`) precisa da variável `GOOGLE_CLIENT_ID` com o **mesmo valor**, para validar a audiência (`aud`) do token — veja o README do backend.
 
 ---
 

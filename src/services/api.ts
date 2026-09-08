@@ -48,6 +48,12 @@ export const authService = {
       method: "PUT",
       body: JSON.stringify(payload),
     }),
+
+  loginWithGoogle: (credential: string): Promise<{ access_token: string; token_type: string }> =>
+    http("/auth/google", {
+      method: "POST",
+      body: JSON.stringify({ credential }),
+    }),
 };
 
 // ─── Tasks Service ────────────────────────────────────────────────────────────
