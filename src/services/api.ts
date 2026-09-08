@@ -42,6 +42,12 @@ async function http<T>(path: string, options?: RequestInit): Promise<T> {
 // ─── Auth Service ──────────────────────────────────────────────────────────
 export const authService = {
   me: (): Promise<User> => http<User>("/auth/me"),
+
+  updateMe: (payload: { name: string }): Promise<User> =>
+    http<User>("/auth/me", {
+      method: "PUT",
+      body: JSON.stringify(payload),
+    }),
 };
 
 // ─── Tasks Service ────────────────────────────────────────────────────────────
