@@ -3,7 +3,7 @@
 import { useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Code2, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
@@ -63,10 +63,7 @@ export default function LoginPage() {
     <div className="min-h-screen flex flex-col bg-zinc-50 dark:bg-zinc-950">
       {/* Minimal header */}
       <header className="h-16 flex items-center justify-between px-6 border-b border-zinc-100 dark:border-zinc-800">
-        <Link href="/" className="flex items-center gap-2">
-          <div className="h-7 w-7 rounded-lg bg-indigo-500 flex items-center justify-center">
-            <Code2 className="h-3.5 w-3.5 text-white" />
-          </div>
+        <Link href="/" className="flex items-center">
           <span className="font-bold text-sm text-zinc-900 dark:text-zinc-100">
             Dev<span className="text-indigo-500">Life</span>
           </span>
