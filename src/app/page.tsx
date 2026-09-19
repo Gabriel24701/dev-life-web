@@ -53,12 +53,11 @@ const features = [
     icon: Target,
     title: "Tracker de Hábitos",
     description: "Construa consistência com hábitos técnicos diários: estudos, código, leitura.",
-    coming: true,
   },
   {
     icon: BookOpen,
     title: "Diário de Estudos",
-    description: "Registre o que aprendeu, links, snippets e insights — tudo em um lugar.",
+    description: "Registre o que aprendeu, links, snippets e insights, tudo em um lugar.",
     coming: true,
   },
   {
@@ -139,7 +138,7 @@ export default function LandingPage() {
           </h1>
 
           <p className="text-lg md:text-xl text-zinc-500 dark:text-zinc-400 leading-relaxed max-w-2xl mx-auto mb-10">
-            Dev Life é o seu hub pessoal de produtividade técnica. Gerencie tarefas, acompanhe hábitos, registre aprendizados e evolua de forma consistente — tudo integrado ao seu fluxo como programador.
+            Dev Life é o seu hub pessoal de produtividade técnica. Gerencie tarefas, acompanhe hábitos, registre aprendizados e evolua de forma consistente, tudo integrado ao seu fluxo como programador.
           </p>
 
           <div className="flex items-center justify-center gap-3 flex-wrap">
@@ -191,13 +190,13 @@ export default function LandingPage() {
             Pronto para levar sua organização a sério?
           </h2>
           <p className="text-zinc-500 dark:text-zinc-500 mb-8">
-            Junte-se e comece a construir o dev que você quer ser — uma tarefa de cada vez.
+            Junte-se e comece a construir o dev que você quer ser, uma tarefa de cada vez.
           </p>
           <Link
             href="/auth/register"
             className="h-12 px-8 inline-flex items-center gap-2 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white font-semibold transition-all duration-200 shadow-lg shadow-indigo-500/20"
           >
-            Começar agora — é grátis
+            Comece agora. É grátis.
             <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
