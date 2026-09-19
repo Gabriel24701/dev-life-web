@@ -90,7 +90,7 @@ describe("TasksPage — combinação de statusFilter + priorityFilter", () => {
     expect(screen.queryByText("Pendente baixa")).not.toBeInTheDocument();
     expect(screen.queryByText("Concluída alta")).not.toBeInTheDocument();
 
-    // "Todas" (exato) é o botão de priority — o de status tem contagem
+    // "Todas" (exato) é o botão de priority; o de status tem contagem
     // concatenada ("Todas2"), então o match exato desambigua sozinho.
     fireEvent.click(screen.getByRole("button", { name: "Todas" }));
 

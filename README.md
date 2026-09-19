@@ -1,6 +1,6 @@
-# Dev Life — Frontend
+# Dev Life: Frontend
 
-Interface web (Next.js) do sistema de produtividade **Dev Life**, consumindo a API real em produção. Este README documenta a arquitetura e a engenharia por trás do frontend para quem está avaliando o projeto como portfólio de **Cloud/DevOps Jr** — o backend, a infraestrutura Azure e a mensageria estão detalhados no repositório da API: [`dev-life-api`](https://github.com/Gabriel24701/dev-life-api).
+Interface web (Next.js) do sistema de produtividade **Dev Life**, consumindo a API real em produção. Este README documenta a arquitetura e a engenharia por trás do frontend para quem está avaliando o projeto como portfólio de **Cloud/DevOps Jr**. O backend, a infraestrutura Azure e a mensageria estão detalhados no repositório da API: [`dev-life-api`](https://github.com/Gabriel24701/dev-life-api).
 
 [![CI](https://github.com/Gabriel24701/dev-life-web/actions/workflows/ci.yml/badge.svg)](https://github.com/Gabriel24701/dev-life-web/actions/workflows/ci.yml)
 
@@ -30,7 +30,7 @@ flowchart LR
     API --> DB
 ```
 
-Detalhes de CI/CD do backend, Terraform, worker assíncrono e observabilidade estão no README da API — aqui o foco é o que roda neste repositório.
+Detalhes de CI/CD do backend, Terraform, worker assíncrono e observabilidade estão no README da API; aqui o foco é o que roda neste repositório.
 
 | Camada | Tecnologia |
 |---|---|
@@ -53,7 +53,7 @@ Detalhes de CI/CD do backend, Terraform, worker assíncrono e observabilidade es
 npm ci → tsc --noEmit → vitest run --coverage (43 testes) → eslint → SonarCloud
 ```
 
-Não há step de deploy neste workflow — o deploy para produção é feito pela integração nativa da Vercel com o GitHub (build automático a cada push/merge para a branch de produção), fora do GitHub Actions. Este pipeline existe para bloquear merge de código que não compila (`type-check`), quebra testes, ou falha no lint, **antes** de qualquer deploy acontecer.
+Não há step de deploy neste workflow: o deploy para produção é feito pela integração nativa da Vercel com o GitHub (build automático a cada push/merge para a branch de produção), fora do GitHub Actions. Este pipeline existe para bloquear merge de código que não compila (`type-check`), quebra testes, ou falha no lint, **antes** de qualquer deploy acontecer.
 
 ---
 
@@ -73,16 +73,16 @@ Não há step de deploy neste workflow — o deploy para produção é feito pel
 | `src/contexts/AuthContext.test.tsx` | 2 |
 | `tests/smoke.test.ts` | 1 |
 
-**Filosofia**: `src/services/api.ts` é mockado via `vi.mock` em todos os testes de Context/componente — nenhum teste faz uma chamada de rede real contra a API. Isso isola o comportamento de estado (loading, erro, optimistic update, rollback) do comportamento real do backend, que é coberto pelos 58 testes do repositório `dev-life-api`. Cobertura é gerada com `@vitest/coverage-v8` (`lcov.info`) e reportada ao SonarCloud junto com type-check e lint.
+**Filosofia**: `src/services/api.ts` é mockado via `vi.mock` em todos os testes de Context/componente: nenhum teste faz uma chamada de rede real contra a API. Isso isola o comportamento de estado (loading, erro, optimistic update, rollback) do comportamento real do backend, que é coberto pelos 58 testes do repositório `dev-life-api`. Cobertura é gerada com `@vitest/coverage-v8` (`lcov.info`) e reportada ao SonarCloud junto com type-check e lint.
 
 ---
 
 ## 4. Segurança (o que cabe ao frontend)
 
-- **Autenticação real** contra a API: `/auth/login`, `/auth/register`, `/auth/me` — sem mock, sem dado fake.
+- **Autenticação real** contra a API: `/auth/login`, `/auth/register`, `/auth/me`, sem mock, sem dado fake.
 - **Login com Google** via [Google Identity Services](https://developers.google.com/identity/gsi/web) (`NEXT_PUBLIC_GOOGLE_CLIENT_ID`); o backend faz a validação real do `id_token` (ver README da API, seção 8).
 - Token JWT e usuário ficam em `localStorage` (`devlife:token` / `devlife:user`); toda chamada autenticada em `src/services/api.ts` injeta `Authorization: Bearer <token>` automaticamente.
-- Sem essa variável configurada, o botão do Google simplesmente não é renderizado — falha silenciosa e segura, login por senha continua funcionando.
+- Sem essa variável configurada, o botão do Google simplesmente não é renderizado: falha silenciosa e segura, login por senha continua funcionando.
 
 ---
 

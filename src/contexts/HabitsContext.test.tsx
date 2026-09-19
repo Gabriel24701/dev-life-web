@@ -260,7 +260,7 @@ describe("HabitsProvider / useHabitsContext", () => {
 
   it("deleteHabit com falha não remove nada (deleteHabit não é otimista)", async () => {
     // Diferente de deleteTask: deleteHabit só chama setHabits(filter) DEPOIS
-    // do await resolver com sucesso — não há remoção otimista, então na
+    // do await resolver com sucesso. Não há remoção otimista, então na
     // falha o item nunca chega a sumir, não é uma "restauração".
     vi.mocked(habitsService.getAll).mockResolvedValue([makeHabit({ id: 1 })]);
     const { promise, reject } = deferred<void>();

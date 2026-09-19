@@ -1,5 +1,8 @@
 .next/
 node_modules/
+
+# instrucoes locais para o Claude Code, nao versionadas
+CLAUDE.md
 .DS_Store
 .env*
 npm-debug.log*
