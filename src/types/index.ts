@@ -46,6 +46,26 @@ export interface UpdateHabitPayload {
   description?: string;
 }
 
+// ─── Goal ────────────────────────────────────────────────────────────────────
+export interface Goal {
+  id: number;
+  title: string;
+  target_date: string;
+  is_completed: boolean;
+  created_at: string;
+  owner_id: number;
+}
+
+export interface CreateGoalPayload {
+  title: string;
+  target_date: string;
+}
+
+export interface UpdateGoalPayload {
+  title?: string;
+  target_date?: string;
+}
+
 // ─── Auth / User ─────────────────────────────────────────────────────────────
 export interface User {
   id: number;

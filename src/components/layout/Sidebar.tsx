@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   CheckSquare,
+  Target,
   BookOpen,
   TrendingUp,
   Settings,
@@ -23,6 +24,12 @@ const navItems = [
     href: "/dashboard/tasks",
     icon: CheckSquare,
     // badge removido: feature real, sem "Em breve"
+  },
+  {
+    label: "Metas",
+    href: "/dashboard/goals",
+    icon: Target,
+    // sem badge: CRUD completo, backend + frontend prontos (Fase 12)
   },
   {
     label: "Estudos",

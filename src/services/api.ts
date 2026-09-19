@@ -1,4 +1,4 @@
-import type { Task, CreateTaskPayload, UpdateTaskPayload, Habit, CreateHabitPayload, UpdateHabitPayload, User } from "@/types";
+import type { Task, CreateTaskPayload, UpdateTaskPayload, Habit, CreateHabitPayload, UpdateHabitPayload, Goal, CreateGoalPayload, UpdateGoalPayload, User } from "@/types";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
@@ -104,4 +104,29 @@ export const habitsService = {
 
   delete: (id: number) =>
     http<void>(`/habits/${id}`, { method: "DELETE" }),
+};
+
+// ─── Goals Service ────────────────────────────────────────────────────────────
+export const goalsService = {
+  getAll: (): Promise<Goal[]> => http<Goal[]>("/goals/"),
+
+  create: (payload: CreateGoalPayload): Promise<Goal> =>
+    http<Goal>("/goals/", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    }),
+
+  update: (id: number, payload: UpdateGoalPayload): Promise<Goal> =>
+    http<Goal>(`/goals/${id}/`, {
+      method: "PUT",
+      body: JSON.stringify(payload),
+    }),
+
+  toggleComplete: (id: number): Promise<Goal> =>
+    http<Goal>(`/goals/${id}/complete`, {
+      method: "PUT",
+    }),
+
+  delete: (id: number): Promise<void> =>
+    http<void>(`/goals/${id}`, { method: "DELETE" }),
 };
