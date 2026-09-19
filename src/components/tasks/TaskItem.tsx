@@ -115,7 +115,7 @@ export function TaskItem({ task, onToggle, onDelete, onEdit }: TaskItemProps) {
           )}
         </div>
 
-        {/* Edit + Delete — sempre visíveis (group-hover não existe de forma
+        {/* Edit + Delete: sempre visíveis (group-hover não existe de forma
             confiável em touchscreen) */}
         <div className="flex items-center gap-1 shrink-0 transition-all duration-150">
           {onEdit && (

@@ -41,7 +41,7 @@ export function GoogleSignInButton({ onCredential, text = "continue_with" }: Goo
 
   // Cobre navegação client-side entre login/registro: o script pode já
   // estar carregado no <head> de uma visita anterior, e o onLoad do
-  // <Script> não dispara de novo nesse caso — checamos o global direto.
+  // <Script> não dispara de novo nesse caso; checamos o global direto.
   useEffect(() => {
     if (window.google?.accounts?.id) {
       setIsScriptReady(true);
