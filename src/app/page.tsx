@@ -1,6 +1,5 @@
 import Link from "next/link";
 import {
-  Code2,
   CheckSquare,
   TrendingUp,
   BookOpen,
@@ -89,10 +88,7 @@ export default function LandingPage() {
       {/* Nav */}
       <nav className="h-16 border-b border-zinc-100 dark:border-zinc-800 flex items-center px-6 sticky top-0 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-sm z-30">
         <div className="max-w-5xl mx-auto w-full flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-lg bg-indigo-500 flex items-center justify-center shadow-sm shadow-indigo-500/30">
-              <Code2 className="h-4 w-4 text-white" />
-            </div>
+          <div className="flex items-center">
             <span className="font-bold text-zinc-900 dark:text-zinc-100 tracking-tight">
               Dev<span className="text-indigo-500">Life</span>
             </span>
@@ -210,8 +206,7 @@ export default function LandingPage() {
       {/* Footer */}
       <footer className="border-t border-zinc-100 dark:border-zinc-800 px-6 py-6">
         <div className="max-w-5xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Code2 className="h-4 w-4 text-indigo-500" />
+          <div className="flex items-center">
             <span className="text-sm font-bold text-zinc-400 dark:text-zinc-600">
               DevLife
             </span>

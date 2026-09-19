@@ -8,7 +8,6 @@ import {
   BookOpen,
   TrendingUp,
   Settings,
-  Code2,
   LogOut,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -76,10 +75,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
       >
       {/* Logo */}
       <div className="h-16 flex items-center px-5 border-b border-zinc-100 dark:border-zinc-800/50">
-        <div className="flex items-center gap-2.5">
-          <div className="h-8 w-8 rounded-lg bg-indigo-500 flex items-center justify-center shadow-sm shadow-indigo-500/30">
-            <Code2 className="h-4 w-4 text-white" />
-          </div>
+        <div className="flex items-center">
           <span className="font-bold text-zinc-900 dark:text-zinc-100 tracking-tight">
             Dev<span className="text-indigo-500">Life</span>
           </span>
