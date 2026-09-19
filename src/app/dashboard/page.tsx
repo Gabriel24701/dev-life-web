@@ -109,7 +109,7 @@ function HabitItem({
         )}
       </div>
 
-      {/* Edit + Delete — sempre visíveis (touch-friendly) */}
+      {/* Edit + Delete: sempre visíveis (touch-friendly) */}
       <div className="flex items-center gap-0.5 shrink-0 transition-all duration-150">
         <button
           onClick={() => onEdit(habit)}

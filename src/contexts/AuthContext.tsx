@@ -50,7 +50,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(u);
   };
 
-  // Salva o token e resolve o usuário via /auth/me — compartilhado por
+  // Salva o token e resolve o usuário via /auth/me. Compartilhado por
   // login, register e loginWithGoogle, que terminam todos com o mesmo
   // passo (token em mãos -> buscar usuário -> persistir), incluindo o
   // rollback do token se /auth/me falhar.

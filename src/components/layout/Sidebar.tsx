@@ -22,13 +22,13 @@ const navItems = [
     label: "Tarefas",
     href: "/dashboard/tasks",
     icon: CheckSquare,
-    // badge removido — feature real, sem "Em breve"
+    // badge removido: feature real, sem "Em breve"
   },
   {
     label: "Estudos",
     href: "/dashboard/studies",
     icon: BookOpen,
-    // badge removido — feature real, sem "Em breve"
+    // badge removido: feature real, sem "Em breve"
   },
   {
     label: "Progresso",
@@ -53,7 +53,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
 
   return (
     <>
-      {/* Backdrop — só mobile, clicável pra fechar */}
+      {/* Backdrop: só mobile, clicável pra fechar */}
       {isOpen && (
         <div
           className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm lg:hidden"
