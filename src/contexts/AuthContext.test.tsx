@@ -55,6 +55,7 @@ const mockUser: User = {
   name: "Ana Google",
   email: "ana@example.com",
   is_active: true,
+  github_username: null,
 };
 
 describe("AuthContext — loginWithGoogle", () => {

@@ -22,6 +22,7 @@ interface AuthContextValue {
   loginWithGoogle: (credential: string) => Promise<void>;
   logout: () => void;
   updateName: (name: string) => Promise<void>;
+  refreshUser: () => Promise<void>;
 }
 
 // ─── Context ──────────────────────────────────────────────────────────────────
@@ -138,9 +139,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     persistAuth(updated);
   }, []);
 
+  // Rebusca o usuário em /auth/me e repersiste. Usado depois de conectar ou
+  // desconectar o GitHub, que mudam campos do usuário fora do fluxo normal
+  // de updateName.
+  const refreshUser = useCallback(async () => {
+    const fresh = await authService.me();
+    persistAuth(fresh);
+  }, []);
+
   return (
     <AuthContext.Provider
-      value={{ user, isLoading, login, register, loginWithGoogle, logout, updateName }}
+      value={{ user, isLoading, login, register, loginWithGoogle, logout, updateName, refreshUser }}
     >
       {children}
     </AuthContext.Provider>

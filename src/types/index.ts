@@ -72,6 +72,7 @@ export interface User {
   name: string;
   email: string;
   is_active: boolean;
+  github_username: string | null;
 }
 
 export interface LoginPayload {
@@ -83,6 +84,26 @@ export interface RegisterPayload {
   name: string;
   email: string;
   password: string;
+}
+
+// ─── GitHub ──────────────────────────────────────────────────────────────────
+export interface GitHubAuthorizeResponse {
+  authorize_url: string;
+}
+
+export interface GitHubConnectionResponse {
+  connected: boolean;
+  github_username: string | null;
+}
+
+export interface GitHubContributionDay {
+  date: string;
+  count: number;
+}
+
+export interface GitHubContributionsResponse {
+  total_contributions: number;
+  days: GitHubContributionDay[];
 }
 
 // ─── API Response ─────────────────────────────────────────────────────────────
