@@ -1,11 +1,12 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import { User, Palette, LogOut, Pencil, Check, X, Loader2 } from "lucide-react";
+import { User, Palette, LogOut, Pencil, Check, X, Loader2, Github, Unplug } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/contexts/ToastContext";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { Button } from "@/components/ui/Button";
+import { githubService } from "@/services/api";
 
 function InfoRow({ label, value }: { label: string; value: string }) {
   return (
@@ -17,12 +18,14 @@ function InfoRow({ label, value }: { label: string; value: string }) {
 }
 
 export default function SettingsPage() {
-  const { user, logout, updateName } = useAuth();
+  const { user, logout, updateName, refreshUser } = useAuth();
   const { toast } = useToast();
 
   const [isEditingName, setIsEditingName] = useState(false);
   const [nameDraft, setNameDraft] = useState(user?.name ?? "");
   const [isSaving, setIsSaving] = useState(false);
+  const [isConnectingGithub, setIsConnectingGithub] = useState(false);
+  const [isDisconnectingGithub, setIsDisconnectingGithub] = useState(false);
 
   const startEditing = () => {
     setNameDraft(user?.name ?? "");
@@ -50,6 +53,32 @@ export default function SettingsPage() {
       toast(err instanceof Error ? err.message : "Erro ao atualizar nome.", "error");
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  // Sem reset de isConnectingGithub no sucesso: a página navega para fora
+  // (window.location.href) antes do botão voltar a ser clicável.
+  const handleConnectGithub = async () => {
+    setIsConnectingGithub(true);
+    try {
+      const { authorize_url } = await githubService.authorize();
+      window.location.href = authorize_url;
+    } catch (err) {
+      toast(err instanceof Error ? err.message : "Erro ao conectar ao GitHub.", "error");
+      setIsConnectingGithub(false);
+    }
+  };
+
+  const handleDisconnectGithub = async () => {
+    setIsDisconnectingGithub(true);
+    try {
+      await githubService.disconnect();
+      await refreshUser();
+      toast("GitHub desconectado.", "success");
+    } catch (err) {
+      toast(err instanceof Error ? err.message : "Erro ao desconectar do GitHub.", "error");
+    } finally {
+      setIsDisconnectingGithub(false);
     }
   };
 
@@ -144,6 +173,52 @@ export default function SettingsPage() {
 
           <InfoRow label="E-mail" value={user?.email ?? "—"} />
           <InfoRow label="Status" value={user?.is_active ? "Ativa" : "Inativa"} />
+        </div>
+      </section>
+
+      {/* Integrations */}
+      <section className="rounded-xl border border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5">
+        <div className="flex items-center gap-2 mb-4">
+          <Github className="h-4 w-4 text-indigo-400" />
+          <h2 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Integrações</h2>
+        </div>
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-sm text-zinc-500 dark:text-zinc-500">GitHub</p>
+            {user?.github_username ? (
+              <p className="text-xs text-zinc-400 dark:text-zinc-600 mt-0.5">
+                Conectado como{" "}
+                <span className="font-medium text-zinc-600 dark:text-zinc-400">
+                  @{user.github_username}
+                </span>
+              </p>
+            ) : (
+              <p className="text-xs text-zinc-400 dark:text-zinc-600 mt-0.5">
+                Conecte para ver seu calendário de contribuições no dashboard.
+              </p>
+            )}
+          </div>
+          {user?.github_username ? (
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={handleDisconnectGithub}
+              isLoading={isDisconnectingGithub}
+            >
+              <Unplug className="h-4 w-4" />
+              Desconectar
+            </Button>
+          ) : (
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={handleConnectGithub}
+              isLoading={isConnectingGithub}
+            >
+              <Github className="h-4 w-4" />
+              Conectar GitHub
+            </Button>
+          )}
         </div>
       </section>
 

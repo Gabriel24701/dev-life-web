@@ -1,4 +1,4 @@
-import type { Task, CreateTaskPayload, UpdateTaskPayload, Habit, CreateHabitPayload, UpdateHabitPayload, Goal, CreateGoalPayload, UpdateGoalPayload, User } from "@/types";
+import type { Task, CreateTaskPayload, UpdateTaskPayload, Habit, CreateHabitPayload, UpdateHabitPayload, Goal, CreateGoalPayload, UpdateGoalPayload, User, GitHubAuthorizeResponse, GitHubConnectionResponse, GitHubContributionsResponse } from "@/types";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
@@ -129,4 +129,20 @@ export const goalsService = {
 
   delete: (id: number): Promise<void> =>
     http<void>(`/goals/${id}`, { method: "DELETE" }),
+};
+
+// ─── GitHub Service ────────────────────────────────────────────────────────────
+export const githubService = {
+  authorize: (): Promise<GitHubAuthorizeResponse> =>
+    http<GitHubAuthorizeResponse>("/github/authorize"),
+
+  callback: (code: string, state: string): Promise<GitHubConnectionResponse> =>
+    http<GitHubConnectionResponse>(
+      `/github/callback?${new URLSearchParams({ code, state }).toString()}`
+    ),
+
+  getContributions: (): Promise<GitHubContributionsResponse> =>
+    http<GitHubContributionsResponse>("/github/contributions"),
+
+  disconnect: (): Promise<void> => http<void>("/github", { method: "DELETE" }),
 };

@@ -17,8 +17,10 @@ import {
 import { TaskList } from "@/components/tasks/TaskList";
 import { HabitFormModal } from "@/components/habits/HabitFormModal";
 import { StatCard } from "@/components/dashboard/StatCard";
+import { GitHubContributionGraph } from "@/components/dashboard/GitHubContributionGraph";
 import { useTasksContext } from "@/contexts/TasksContext";
 import { useHabitsContext } from "@/contexts/HabitsContext";
+import { useAuth } from "@/contexts/AuthContext";
 import type { Habit } from "@/types";
 
 // ─── Progress Bar ─────────────────────────────────────────────────────────────
@@ -255,8 +257,8 @@ function HabitsWidget() {
   );
 }
 
-// ─── Activity Feed (placeholder) ──────────────────────────────────────────────
-function ActivityFeed() {
+// ─── Activity Feed (sem GitHub conectado) ─────────────────────────────────────
+function ActivityFeedPrompt() {
   return (
     <div className="rounded-xl border border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5">
       <div className="flex items-center gap-2 mb-4">
@@ -268,7 +270,8 @@ function ActivityFeed() {
       <div className="flex flex-col items-center justify-center py-6 text-center gap-2">
         <Github className="h-8 w-8 text-zinc-200 dark:text-zinc-800" />
         <p className="text-xs text-zinc-400 dark:text-zinc-600 leading-relaxed">
-          Sincronização com o GitHub em breve.
+          Conecte sua conta GitHub em Configurações para ver seu calendário de
+          contribuições aqui.
         </p>
       </div>
     </div>
@@ -279,6 +282,7 @@ function ActivityFeed() {
 export default function DashboardPage() {
   const { stats, isLoading } = useTasksContext();
   const { habits } = useHabitsContext();
+  const { user } = useAuth();
 
   const maxStreak = habits && habits.length > 0 ? Math.max(...habits.map((h) => h.streak)) : 0;
 
@@ -329,7 +333,7 @@ export default function DashboardPage() {
         </div>
         <div className="space-y-4">
           <HabitsWidget />
-          <ActivityFeed />
+          {user?.github_username ? <GitHubContributionGraph /> : <ActivityFeedPrompt />}
         </div>
       </div>
     </div>

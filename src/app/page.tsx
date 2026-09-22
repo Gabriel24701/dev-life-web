@@ -70,7 +70,6 @@ const features = [
     icon: Github,
     title: "Integração GitHub",
     description: "Veja seus commits, PRs e streak diretamente no dashboard.",
-    coming: true,
   },
   {
     icon: Terminal,
