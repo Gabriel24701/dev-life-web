@@ -11,10 +11,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Dev Life — Organize sua vida de Dev",
+  title: "DevLife",
   description:
     "O SaaS de produtividade feito para programadores que levam o desenvolvimento pessoal a sério.",
-  icons: { icon: "/favicon.ico" },
 };
 
 export default function RootLayout({
