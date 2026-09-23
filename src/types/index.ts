@@ -66,6 +66,28 @@ export interface UpdateGoalPayload {
   target_date?: string;
 }
 
+// ─── StudyNote ───────────────────────────────────────────────────────────────
+export interface StudyNote {
+  id: number;
+  title: string;
+  content: string;
+  tags: string | null;
+  created_at: string;
+  owner_id: number;
+}
+
+export interface CreateStudyNotePayload {
+  title: string;
+  content: string;
+  tags?: string;
+}
+
+export interface UpdateStudyNotePayload {
+  title?: string;
+  content?: string;
+  tags?: string;
+}
+
 // ─── Auth / User ─────────────────────────────────────────────────────────────
 export interface User {
   id: number;

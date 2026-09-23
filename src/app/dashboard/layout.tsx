@@ -8,6 +8,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { TasksProvider } from "@/contexts/TasksContext";
 import { HabitsProvider } from "@/contexts/HabitsContext";
 import { GoalsProvider } from "@/contexts/GoalsContext";
+import { StudyNotesProvider } from "@/contexts/StudyNotesContext";
 
 export default function DashboardLayout({
   children,
@@ -42,15 +43,17 @@ export default function DashboardLayout({
     <TasksProvider>
       <HabitsProvider>
         <GoalsProvider>
-          <div className="flex h-screen overflow-hidden bg-zinc-50/50 dark:bg-zinc-950">
-            <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
-            <div className="flex-1 flex flex-col overflow-hidden">
-              <DashboardHeader onMenuClick={() => setIsSidebarOpen(true)} />
-              <main className="flex-1 overflow-y-auto p-6">
-                {children}
-              </main>
+          <StudyNotesProvider>
+            <div className="flex h-screen overflow-hidden bg-zinc-50/50 dark:bg-zinc-950">
+              <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
+              <div className="flex-1 flex flex-col overflow-hidden">
+                <DashboardHeader onMenuClick={() => setIsSidebarOpen(true)} />
+                <main className="flex-1 overflow-y-auto p-6">
+                  {children}
+                </main>
+              </div>
             </div>
-          </div>
+          </StudyNotesProvider>
         </GoalsProvider>
       </HabitsProvider>
     </TasksProvider>
