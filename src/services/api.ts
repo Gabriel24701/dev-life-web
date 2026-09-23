@@ -1,4 +1,4 @@
-import type { Task, CreateTaskPayload, UpdateTaskPayload, Habit, CreateHabitPayload, UpdateHabitPayload, Goal, CreateGoalPayload, UpdateGoalPayload, User, GitHubAuthorizeResponse, GitHubConnectionResponse, GitHubContributionsResponse } from "@/types";
+import type { Task, CreateTaskPayload, UpdateTaskPayload, Habit, CreateHabitPayload, UpdateHabitPayload, Goal, CreateGoalPayload, UpdateGoalPayload, StudyNote, CreateStudyNotePayload, UpdateStudyNotePayload, User, GitHubAuthorizeResponse, GitHubConnectionResponse, GitHubContributionsResponse } from "@/types";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
@@ -145,4 +145,24 @@ export const githubService = {
     http<GitHubContributionsResponse>("/github/contributions"),
 
   disconnect: (): Promise<void> => http<void>("/github", { method: "DELETE" }),
+};
+
+// ─── Study Notes Service ────────────────────────────────────────────────────
+export const studyNotesService = {
+  getAll: (): Promise<StudyNote[]> => http<StudyNote[]>("/study-notes/"),
+
+  create: (payload: CreateStudyNotePayload): Promise<StudyNote> =>
+    http<StudyNote>("/study-notes/", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    }),
+
+  update: (id: number, payload: UpdateStudyNotePayload): Promise<StudyNote> =>
+    http<StudyNote>(`/study-notes/${id}/`, {
+      method: "PUT",
+      body: JSON.stringify(payload),
+    }),
+
+  delete: (id: number): Promise<void> =>
+    http<void>(`/study-notes/${id}`, { method: "DELETE" }),
 };
